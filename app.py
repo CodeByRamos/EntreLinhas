@@ -1,24 +1,52 @@
-from flask import Flask, render_template, request, redirect, url_for
-from db import init_db
+from flask import Flask, render_template, request, redirect, flash, url_for
+import sqlite3
+from datetime import datetime
 
 app = Flask(__name__)
+app.secret_key = 'chave-secreta-segura'  # Pode ser qualquer coisa segura.
 
-# Lista temporária de desabafos
-desabafos = []
+# Banco de dados
+def init_db():
+    conn = sqlite3.connect('entrelinhas.db')
+    cursor = conn.cursor()
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS posts (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            mensagem TEXT NOT NULL,
+            categoria TEXT NOT NULL,
+            data_postagem TEXT NOT NULL,
+            visivel INTEGER DEFAULT 1
+        )
+    ''')
+    conn.commit()
+    conn.close()
 
-@app.route("/")
-def exibir_feed_de_desabafos():
-    return render_template("feed.html", desabafos=desabafos)
+init_db()
 
-@app.route("/enviar", methods=["POST"])
-def receber_novo_desabafo():
-    conteudo = request.form.get("conteudo")
-    if conteudo:
-        if len(conteudo) > 500:
-            return "Seu desabafo é muito importante, mas por favor, tente resumir em até 500 caracteres"
-    desabafos.append(conteudo.strip())
-    return redirect(url_for("exibir_feed_de_desabafos"))
+@app.route('/')
+def home():
+    conn = sqlite3.connect('entrelinhas.db')
+    cursor = conn.cursor()
+    cursor.execute("SELECT mensagem, categoria, data_postagem FROM posts WHERE visivel=1 ORDER BY data_postagem DESC")
+    desabafos = cursor.fetchall()
+    conn.close()
+    return render_template('feed.html', desabafos=desabafos)
 
-if __name__ == "__main__":
-    init_db()
-    app.run(debug=True)
+@app.route('/enviar', methods=['POST'])
+def enviar():
+    conteudo = request.form['conteudo']
+    categoria = request.form['categoria']
+    data_postagem = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+
+    conn = sqlite3.connect('entrelinhas.db')
+    cursor = conn.cursor()
+    cursor.execute('INSERT INTO posts (mensagem, categoria, data_postagem) VALUES (?, ?, ?)',
+                   (conteudo, categoria, data_postagem))
+    conn.commit()
+    conn.close()
+
+    flash('Seu desabafo foi enviado com sucesso. Obrigado por compartilhar.')
+    return redirect(url_for('home'))
+
+if __name__ == '__main__':
+    app.run()

@@ -1,47 +1,63 @@
 <!DOCTYPE html>
 <html lang="pt-br" class="dark">
 <head>
-    <meta charset="UTF-8" />
-    <title>Entre Linhas — Desabafos Anônimos</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/estilos.css') }}" />
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-      tailwind.config = {
-        darkMode: 'class',
-      };
-    </script>
+  <meta charset="UTF-8" />
+  <title>Entre Linhas — Desabafos Anônimos</title>
+
+  <!-- Google Fonts: Inter -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/estilos.css') }}" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+    };
+  </script>
 </head>
-<body class="bg-gray-100 dark:bg-gray-900 min-h-screen text-gray-900 dark:text-gray-100">
+<body class="bg-gray-50 dark:bg-gray-900 min-h-screen text-gray-900 dark:text-gray-100 font-inter">
 
   <header class="p-6 text-center bg-white dark:bg-gray-800 shadow-md">
-    <h1 class="text-3xl font-bold">📝 Entre Linhas</h1>
-    <p class="subtitulo text-gray-700 dark:text-gray-300 mt-2">É seu espaço, diga o que sentir.</p>
+    <h1 class="text-4xl font-extrabold tracking-wide">📝 Entre Linhas</h1>
+    <p class="text-indigo-600 dark:text-indigo-400 mt-2 text-lg font-medium">É seu espaço, diga o que sentir.</p>
   </header>
 
-  <main class="max-w-xl mx-auto p-6">
+  <main class="max-w-xl mx-auto px-6 py-8">
+
+    <!-- Mensagens Flash -->
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <div
+          class="mb-8 p-4 bg-green-100 dark:bg-green-900 text-green-900 dark:text-green-300 rounded-lg shadow text-center font-semibold transition-colors animate-fade-in-down"
+          role="alert"
+        >
+          {% for message in messages %}
+            <p>{{ message }}</p>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
 
     <!-- Formulário de envio -->
-    <section
-      id="formulario-de-envio"
-      class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md mb-8"
-    >
-      <form method="POST" action="/enviar" class="flex flex-col gap-4">
-        <label for="conteudo" class="font-semibold">Seu desabafo:</label>
+    <section id="formulario-de-envio" class="bg-white dark:bg-gray-800 p-8 rounded-xl shadow-lg mb-10">
+      <form method="POST" action="{{ url_for('enviar') }}" class="flex flex-col gap-6" aria-label="Formulário para envio de desabafo anônimo">
+        <label for="conteudo" class="font-semibold text-gray-800 dark:text-gray-200 text-lg">Seu desabafo:</label>
         <textarea
           id="conteudo"
           name="conteudo"
           required
           placeholder="Escreva o que quiser dizer..."
-          rows="4"
-          class="w-full p-3 rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          rows="5"
+          class="w-full p-4 rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-indigo-500 resize-y transition-colors duration-300 focus:animate-glow"
         ></textarea>
 
-        <label for="categoria" class="font-semibold">Categoria:</label>
+        <label for="categoria" class="font-semibold text-gray-800 dark:text-gray-200 text-lg">Categoria:</label>
         <select
           id="categoria"
           name="categoria"
           required
-          class="w-full p-3 rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 appearance-none focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-[url('data:image/svg+xml;utf8,<svg fill=\'%23999\' height=\'20\' viewBox=\'0 0 20 20\' width=\'20\' xmlns=\'http://www.w3.org/2000/svg\'><path d=\'M7 10l5 5 5-5z\'/></svg>')] bg-no-repeat bg-right-3"
+          class="w-full p-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 appearance-none focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-[url('data:image/svg+xml;utf8,<svg fill=\'%23999\' height=\'20\' viewBox=\'0 0 20 20\' width=\'20\' xmlns=\'http://www.w3.org/2000/svg\'><path d=\'M7 10l5 5 5-5z\'/></svg>')] bg-no-repeat bg-right-4 transition duration-300 focus:animate-glow"
+          aria-label="Selecione a categoria do desabafo"
         >
           <option value="" disabled selected>Selecione uma categoria</option>
           <option value="estudo">Estudo</option>
@@ -53,27 +69,31 @@
 
         <button
           type="submit"
-          class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 rounded-md transition-colors duration-200"
+          class="self-start bg-indigo-600 bg-opacity-20 hover:bg-opacity-100 text-indigo-800 hover:text-white font-semibold py-3 px-8 rounded-lg cursor-pointer transition duration-300 animate-scale-up"
+          title="Enviar desabafo anônimo"
         >
-          Desabafar
+          Desabafar 😮‍💨
         </button>
       </form>
     </section>
 
-    <!-- Lista de desabafos -->
-    <section id="lista-de-desabafos" class="space-y-4">
-      {% for texto in desabafos %}
-        <div
-          class="desabafo bg-white dark:bg-gray-800 p-4 rounded-md shadow-sm break-words"
-        >
-          {{ texto }}
-        </div>
+    <!-- Lista de desabafos formatada -->
+    <section id="lista-de-desabafos" class="space-y-6">
+      {% for mensagem, categoria, data_postagem in desabafos %}
+        <article class="bg-white dark:bg-gray-800 p-5 rounded-xl shadow-md break-words transition-transform hover:scale-[1.02] duration-300 animate-fade-slide-up">
+          <p class="text-gray-900 dark:text-gray-100 whitespace-pre-line text-lg leading-relaxed">{{ mensagem }}</p>
+          <div class="mt-4 flex justify-between items-center text-sm text-gray-600 dark:text-gray-400 font-medium">
+            <span class="badge-category capitalize {{ categoria }}">{{ '#' + categoria }}</span>
+            <time datetime="{{ data_postagem }}">{{ data_postagem }}</time>
+          </div>
+        </article>
       {% else %}
-        <p class="text-center text-gray-500 dark:text-gray-400">
+        <p class="text-center text-gray-500 dark:text-gray-400 italic text-lg">
           Nenhum desabafo ainda.
         </p>
       {% endfor %}
     </section>
+
   </main>
 </body>
 </html>
