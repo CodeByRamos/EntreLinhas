@@ -1,5 +1,5 @@
 
-=======
+
 # 📝 EntreLinhas — É seu espaço, diga o que sentir.
 
 **EntreLinhas** é um espaço seguro e anônimo onde qualquer pessoa pode compartilhar sentimentos, pensamentos ou desabafos.  
@@ -73,5 +73,5 @@ EntreLinhas Project/
 - Estatísticas anônimas sobre temas mais discutidos
 
 ---
->>>>>>> 7220671ada9990da703e916a48699f61aa59dd1f
+
 
