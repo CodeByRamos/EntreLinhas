@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Entre Linhas - Fórum de Desabafos Anônimos
 
 Um espaço acolhedor onde usuários podem fazer desabafos anonimamente, comentar e reagir com sensibilidade aos relatos dos outros.
@@ -100,4 +101,40 @@ EntreLinhas Project/
 - Paginação para lidar com grande volume de desabafos
 - Modo escuro/claro com persistência de preferência
 - Estatísticas anônimas sobre temas mais discutidos
+=======
+# 📝 EntreLinhas — É seu espaço, diga o que sentir.
+
+**EntreLinhas** é um espaço seguro e anônimo onde qualquer pessoa pode compartilhar sentimentos, pensamentos ou desabafos.  
+A proposta é simples, mas poderosa: oferecer um lugar onde as palavras possam ser libertas sem julgamento.
+
+> "Às vezes, a gente só precisa ser ouvido — mesmo que por alguém que a gente nunca conheceu."
+
+---
+
+## 💡 Propósito
+
+Muitas vezes não temos com quem conversar, ou simplesmente queremos tirar um peso do peito.  
+**EntreLinhas** foi criado para acolher esses momentos.  
+Apenas você e o que precisa dizer.
+
+---
+
+## 🔧 Tecnologias usadas
+
+- **Python** com [Flask]
+- **HTML5 + CSS3** (modo escuro simples)
+- **SQLite** como banco de dados local
+
+---
+
+## 🧩 Funcionalidades
+
+- Enviar desabafos anonimamente
+- Escolher uma categoria (ex: estudo, família, sentimentos)
+- Feed simples com os desabafos mais recentes
+- Banco de dados local com histórico (não visível para o usuário)
+- Limite de 500 caracteres para respeitar o espaço de todos
+
+---
+>>>>>>> 7220671ada9990da703e916a48699f61aa59dd1f
 
