@@ -1,0 +1,241 @@
+{% extends 'base.html' %}
+
+{% block title %}Entre Linhas — Desabafos{% endblock %}
+
+{% block extra_head %}
+<style>
+  /* Estilos específicos para badges de categoria */
+  .badge-categoria {
+    @apply px-3 py-1 rounded-full text-xs font-medium;
+  }
+  .badge-categoria.estudo {
+    @apply bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300;
+  }
+  .badge-categoria.família {
+    @apply bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300;
+  }
+  .badge-categoria.trabalho {
+    @apply bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-300;
+  }
+  .badge-categoria.amizade {
+    @apply bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300;
+  }
+  .badge-categoria.relacionamento {
+    @apply bg-pink-100 text-pink-800 dark:bg-pink-900 dark:text-pink-300;
+  }
+  .badge-categoria.saúde {
+    @apply bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300;
+  }
+  .badge-categoria.outros {
+    @apply bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300;
+  }
+  
+  /* Animações para comentários e reações */
+  .comentario-novo {
+    animation: pulseHighlight 2s ease-in-out;
+  }
+  
+  @keyframes pulseHighlight {
+    0% { background-color: rgba(79, 70, 229, 0.2); }
+    100% { background-color: transparent; }
+  }
+  
+  .reacao-botao {
+    transition: all 0.3s ease;
+  }
+  .reacao-botao:hover {
+    transform: scale(1.15);
+  }
+  .reacao-botao.ativo {
+    transform: scale(1.2);
+    filter: drop-shadow(0 0 3px rgba(79, 70, 229, 0.5));
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="bg-gradient-to-b from-primary-600 to-primary-800 text-white py-12">
+  <div class="container mx-auto px-6 text-center">
+    <h1 class="text-4xl font-bold mb-4">Desabafos</h1>
+    <p class="text-xl opacity-90 max-w-2xl mx-auto">
+      Este é um espaço seguro para compartilhar seus pensamentos e sentimentos. 
+      Todos os desabafos são anônimos.
+    </p>
+  </div>
+</div>
+
+<div class="container mx-auto px-6 py-10">
+  <!-- Mensagens Flash -->
+  {% with messages = get_flashed_messages() %}
+    {% if messages %}
+      <div class="mb-8 p-4 bg-green-100 dark:bg-green-900 text-green-900 dark:text-green-300 rounded-lg shadow text-center font-semibold transition-all duration-500 animate-fade-in-down" role="alert">
+        {% for message in messages %}
+          <p>{{ message }}</p>
+        {% endfor %}
+      </div>
+    {% endif %}
+  {% endwith %}
+
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+    <!-- Coluna do formulário -->
+    <div class="lg:col-span-1">
+      <div class="sticky top-6">
+        <section id="formulario-de-envio" class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg mb-6">
+          <h2 class="text-2xl font-bold mb-6 text-gray-800 dark:text-gray-200">Compartilhe seu desabafo</h2>
+          
+          <form method="POST" action="{{ url_for('posts.enviar') }}" class="flex flex-col gap-5" aria-label="Formulário para envio de desabafo anônimo">
+            <div>
+              <label for="conteudo" class="block font-medium text-gray-700 dark:text-gray-300 mb-2">Seu desabafo:</label>
+              <textarea
+                id="conteudo"
+                name="conteudo"
+                required
+                placeholder="Escreva o que quiser dizer..."
+                rows="6"
+                class="w-full p-4 rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-primary-500 resize-y transition-colors duration-300"
+              ></textarea>
+            </div>
+
+            <div>
+              <label for="categoria" class="block font-medium text-gray-700 dark:text-gray-300 mb-2">Categoria:</label>
+              <select
+                id="categoria"
+                name="categoria"
+                required
+                class="w-full p-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 appearance-none focus:outline-none focus:ring-2 focus:ring-primary-500 transition duration-300"
+                aria-label="Selecione a categoria do desabafo"
+              >
+                <option value="" disabled selected>Selecione uma categoria</option>
+                {% for categoria in categorias %}
+                <option value="{{ categoria.valor }}">{{ categoria.nome }}</option>
+                {% endfor %}
+              </select>
+            </div>
+
+            <button
+              type="submit"
+              class="self-start bg-primary-600 hover:bg-primary-700 text-white font-semibold py-3 px-8 rounded-lg shadow hover:shadow-lg transition duration-300 flex items-center space-x-2"
+              title="Enviar desabafo anônimo"
+            >
+              <span>Desabafar</span>
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM7 9a1 1 0 100-2 1 1 0 000 2zm7-1a1 1 0 11-2 0 1 1 0 012 0zm-7.536 5.879a1 1 0 001.415 0 3 3 0 014.242 0 1 1 0 001.415-1.415 5 5 0 00-7.072 0 1 1 0 000 1.415z" clip-rule="evenodd" />
+              </svg>
+            </button>
+          </form>
+        </section>
+        
+        <section class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg">
+          <h2 class="text-2xl font-bold mb-4 text-gray-800 dark:text-gray-200">Dicas</h2>
+          <ul class="space-y-3 text-gray-700 dark:text-gray-300">
+            <li class="flex items-start">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-primary-500 mr-2 mt-0.5 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+              </svg>
+              <span>Seja honesto com seus sentimentos</span>
+            </li>
+            <li class="flex items-start">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-primary-500 mr-2 mt-0.5 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+              </svg>
+              <span>Evite informações que possam identificá-lo</span>
+            </li>
+            <li class="flex items-start">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-primary-500 mr-2 mt-0.5 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+              </svg>
+              <span>Respeite os outros usuários</span>
+            </li>
+            <li class="flex items-start">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-primary-500 mr-2 mt-0.5 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+              </svg>
+              <span>Comente nos desabafos para apoiar outros</span>
+            </li>
+          </ul>
+        </section>
+      </div>
+    </div>
+    
+    <!-- Coluna dos desabafos -->
+    <div class="lg:col-span-2">
+      <section id="lista-de-desabafos" class="space-y-8">
+        <h2 class="sr-only">Lista de desabafos</h2>
+        
+        {% for post in desabafos %}
+          <article id="post-{{ post.id }}" class="bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden transition-all duration-300 hover:shadow-lg">
+            <!-- Conteúdo do desabafo -->
+            <div class="p-6">
+              <p class="text-gray-900 dark:text-gray-100 whitespace-pre-line text-lg leading-relaxed">{{ post.mensagem }}</p>
+              <div class="mt-4 flex justify-between items-center text-sm text-gray-600 dark:text-gray-400 font-medium">
+                <span class="badge-categoria {{ post.categoria }}">{{ '#' + post.categoria }}</span>
+                <time datetime="{{ post.data_postagem }}">{{ post.data_postagem }}</time>
+              </div>
+            </div>
+            
+            <!-- Seção de reações -->
+            <div class="border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-750 px-6 py-3">
+              <div class="flex flex-wrap gap-2" data-post-id="{{ post.id }}">
+                <!-- As reações serão carregadas via JavaScript -->
+                <div class="flex items-center gap-2 reaction-buttons-container">
+                  <span class="text-sm text-gray-500 dark:text-gray-400">Carregando reações...</span>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Seção de comentários -->
+            <div class="border-t border-gray-200 dark:border-gray-700">
+              <div class="p-6 space-y-4">
+                <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-200">Comentários</h3>
+                
+                <!-- Lista de comentários -->
+                <div class="space-y-4 comments-container" data-post-id="{{ post.id }}">
+                  <p class="text-gray-500 dark:text-gray-400 text-sm">Carregando comentários...</p>
+                </div>
+                
+                <!-- Formulário de comentário -->
+                <form class="mt-6 comment-form" data-post-id="{{ post.id }}">
+                  <div class="flex items-start space-x-3">
+                    <div class="flex-grow">
+                      <textarea 
+                        class="w-full p-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-primary-500 resize-none text-sm"
+                        placeholder="Deixe um comentário anônimo..."
+                        rows="2"
+                        required
+                      ></textarea>
+                    </div>
+                    <button 
+                      type="submit" 
+                      class="bg-primary-600 hover:bg-primary-700 text-white font-medium py-2 px-4 rounded-lg transition duration-300 text-sm flex-shrink-0"
+                    >
+                      Enviar
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </article>
+        {% else %}
+          <div class="text-center py-12">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 mx-auto text-gray-400 dark:text-gray-600 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+            </svg>
+            <p class="text-gray-500 dark:text-gray-400 text-xl font-medium">
+              Nenhum desabafo ainda.
+            </p>
+            <p class="text-gray-500 dark:text-gray-400 mt-2">
+              Seja o primeiro a compartilhar seus pensamentos.
+            </p>
+          </div>
+        {% endfor %}
+      </section>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="{{ url_for('static', filename='js/comments.js') }}"></script>
+<script src="{{ url_for('static', filename='js/reactions.js') }}"></script>
+{% endblock %}
+
